@@ -1,0 +1,67 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Панель управления | МедТех Коннект{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Панель управления</h1>
+
+<div class="row mb-4">
+    <!-- Статистические карточки -->
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Всего пациентов</h5>
+                <p class="card-text display-4">{{ patient_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Приемы сегодня</h5>
+                <p class="card-text display-4">{{ appointments_today }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Телеконсультации сегодня</h5>
+                <p class="card-text display-4">{{ telemedicine_today }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Предстоящие приемы -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Ближайшие приемы</h5>
+                <a href="{% url 'patient_list' %}" class="btn btn-sm btn-outline-primary">Все пациенты</a>
+            </div>
+            <div class="card-body">
+                {% if upcoming_appointments %}
+                    <div class="list-group">
+                        {% for appointment in upcoming_appointments %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ appointment.patient }}</h6>
+                                    <small>{{ appointment.date_time|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ appointment.reason }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Врач: {{ appointment.doctor.get_full_name|default:appointment.doctor.username }}</small>
+                                    <div>
+                                        <a href="{% url 'appointment_update_status' appointment.id 'COMPLETED' %}" class="btn btn-sm btn-success">Завершить</a>
+                                        <a href="{% url 'appointment_update_status' appointment.id 'CANCELED' %}" class="btn btn-sm btn-danger">Отменить</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Нет предстоящих приемов</p>
+                {% endif %}
+                {% endblock %}

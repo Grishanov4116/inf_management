@@ -1,0 +1,64 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Планирование телемедицинской консультации | МедТех Коннект{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Планирование телемедицинской консультации для пациента: {{ patient.get_full_name }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.doctor.id_for_label }}" class="form-label">Врач</label>
+                            {{ form.doctor.errors }}
+                            <select name="{{ form.doctor.name }}" id="{{ form.doctor.id_for_label }}" class="form-select {% if form.doctor.errors %}is-invalid{% endif %}">
+                                <option value="">Выберите врача</option>
+                                {% for choice in form.doctor.field.queryset %}
+                                    <option value="{{ choice.id }}" {% if form.doctor.value|stringformat:"s" == choice.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice.get_full_name|default:choice.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.scheduled_time.id_for_label }}" class="form-label">Запланированное время</label>
+                            {{ form.scheduled_time.errors }}
+                            <input type="datetime-local" name="{{ form.scheduled_time.name }}" id="{{ form.scheduled_time.id_for_label }}" class="form-control {% if form.scheduled_time.errors %}is-invalid{% endif %}" value="{{ form.scheduled_time.value|default:'' }}">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.complaint.id_for_label }}" class="form-label">Жалоба / причина обращения</label>
+                            {{ form.complaint.errors }}
+                            <textarea name="{{ form.complaint.name }}" id="{{ form.complaint.id_for_label }}" class="form-control {% if form.complaint.errors %}is-invalid{% endif %}" rows="3">{{ form.complaint.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Статус</label>
+                            {{ form.status.errors }}
+                            <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" class="form-select {% if form.status.errors %}is-invalid{% endif %}">
+                                {% for value, text in form.status.field.choices %}
+                                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                                        {{ text }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <a href="{% url 'patient_detail' patient.id %}" class="btn btn-secondary ms-2">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

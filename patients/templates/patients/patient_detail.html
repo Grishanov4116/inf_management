@@ -1,0 +1,198 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}{{ patient.get_full_name }} | МедТех Коннект{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'patient_list' %}" class="btn btn-sm btn-outline-secondary me-2">
+            &larr; К списку пациентов
+        </a>
+        <h1 class="d-inline">{{ patient.get_full_name }}</h1>
+    </div>
+    <div>
+        <a href="{% url 'patient_update' patient.id %}" class="btn btn-outline-primary me-2">Редактировать</a>
+        <a href="{% url 'patient_delete' patient.id %}" class="btn btn-outline-danger">Удалить</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Информация о пациенте -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Данные пациента</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Дата рождения:</dt>
+                    <dd class="col-sm-7">{{ patient.date_of_birth|date:"d.m.Y" }}</dd>
+                    
+                    <dt class="col-sm-5">Пол:</dt>
+                    <dd class="col-sm-7">{{ patient.get_gender_display }}</dd>
+                    
+                    <dt class="col-sm-5">Телефон:</dt>
+                    <dd class="col-sm-7">{{ patient.phone_number }}</dd>
+                    
+                    <dt class="col-sm-5">Адрес:</dt>
+                    <dd class="col-sm-7">{{ patient.address }}</dd>
+                    
+                    <dt class="col-sm-5">Полис ОМС:</dt>
+                    <dd class="col-sm-7">{{ patient.medical_insurance_number }}</dd>
+                    
+                    {% if patient.allergies %}
+                    <dt class="col-sm-5">Аллергии:</dt>
+                    <dd class="col-sm-7 text-danger">{{ patient.allergies }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="col-md-8">
+        <!-- Вкладки для разных типов информации -->
+        <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="records-tab" data-bs-toggle="tab" data-bs-target="#records" type="button" role="tab" aria-controls="records" aria-selected="true">
+                    Медицинские записи
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab" aria-controls="appointments" aria-selected="false">
+                    Приемы
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="telemedicine-tab" data-bs-toggle="tab" data-bs-target="#telemedicine" type="button" role="tab" aria-controls="telemedicine" aria-selected="false">
+                    Телемедицина
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content p-3 border border-top-0 rounded-bottom mb-4" id="patientTabsContent">
+            <!-- Медицинские записи -->
+            <div class="tab-pane fade show active" id="records" role="tabpanel" aria-labelledby="records-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Медицинские записи</h5>
+                    <a href="{% url 'medical_record_create' patient.id %}" class="btn btn-sm btn-primary">Добавить запись</a>
+                </div>
+                
+                {% if medical_records %}
+                    <div class="accordion" id="accordionMedicalRecords">
+                        {% for record in medical_records %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ record.id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ record.id }}" aria-expanded="false" aria-controls="collapse{{ record.id }}">
+                                        <div class="d-flex justify-content-between w-100 me-3">
+                                            <span><strong>{{ record.diagnosis }}</strong></span>
+                                            <small>{{ record.created_at|date:"d.m.Y" }}</small>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ record.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ record.id }}" data-bs-parent="#accordionMedicalRecords">
+                                    <div class="accordion-body">
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-3">Врач:</dt>
+                                            <dd class="col-sm-9">{{ record.doctor.get_full_name|default:record.doctor.username }}</dd>
+                                            
+                                            <dt class="col-sm-3">Симптомы:</dt>
+                                            <dd class="col-sm-9">{{ record.symptoms }}</dd>
+                                            
+                                            <dt class="col-sm-3">Лечение:</dt>
+                                            <dd class="col-sm-9">{{ record.treatment }}</dd>
+                                            
+                                            {% if record.notes %}
+                                            <dt class="col-sm-3">Примечания:</dt>
+                                            <dd class="col-sm-9">{{ record.notes }}</dd>
+                                            {% endif %}
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">У пациента еще нет медицинских записей</p>
+                {% endif %}
+            </div>
+            
+            <!-- Приемы -->
+            <div class="tab-pane fade" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Записи на прием</h5>
+                    <a href="{% url 'appointment_create' patient.id %}" class="btn btn-sm btn-primary">Записать на прием</a>
+                </div>
+                
+                {% if appointments %}
+                    <div class="list-group">
+                        {% for appointment in appointments %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ appointment.date_time|date:"d.m.Y H:i" }}</h6>
+                                    <span class="badge {% if appointment.status == 'SCHEDULED' %}bg-primary{% elif appointment.status == 'COMPLETED' %}bg-success{% elif appointment.status == 'CANCELED' %}bg-danger{% else %}bg-warning{% endif %}">
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </div>
+                                <p class="mb-1">{{ appointment.reason }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Врач: {{ appointment.doctor.get_full_name|default:appointment.doctor.username }}</small>
+                                    {% if appointment.status == 'SCHEDULED' %}
+                                        <div>
+                                            <a href="{% url 'appointment_update_status' appointment.id 'COMPLETED' %}" class="btn btn-sm btn-success">Завершить</a>
+                                            <a href="{% url 'appointment_update_status' appointment.id 'CANCELED' %}" class="btn btn-sm btn-danger">Отменить</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">У пациента еще нет записей на прием</p>
+                {% endif %}
+            </div>
+            
+            <!-- Телемедицина -->
+            <div class="tab-pane fade" id="telemedicine" role="tabpanel" aria-labelledby="telemedicine-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Телемедицинские консультации</h5>
+                    <a href="{% url 'telemedicine_create' patient.id %}" class="btn btn-sm btn-primary">Запланировать</a>
+                </div>
+                
+                {% if telemedicine_sessions %}
+                    <div class="list-group">
+                        {% for session in telemedicine_sessions %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ session.scheduled_time|date:"d.m.Y H:i" }}</h6>
+                                    <span class="badge {% if session.status == 'SCHEDULED' %}bg-primary{% elif session.status == 'IN_PROGRESS' %}bg-warning{% elif session.status == 'COMPLETED' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ session.get_status_display }}
+                                    </span>
+                                </div>
+                                <p class="mb-1">{{ session.complaint }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Врач: {{ session.doctor.get_full_name|default:session.doctor.username }}</small>
+                                    <div>
+                                        {% if session.status == 'SCHEDULED' %}
+                                            <a href="{% url 'telemedicine_start' session.id %}" class="btn btn-sm btn-primary">Начать</a>
+                                        {% elif session.status == 'IN_PROGRESS' %}
+                                            <a href="{% url 'telemedicine_session' session.id %}" class="btn btn-sm btn-warning">Продолжить</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if session.summary %}
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <small><strong>Заключение:</strong> {{ session.summary }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">У пациента еще нет телемедицинских консультаций</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | МедТех Коннект</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-card {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .login-header {
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container login-container">
+        <div class="card login-card">
+            <div class="login-header">
+                <h3 class="m-0">МедТех Коннект</h3>
+                <p class="mb-0">Система управления медицинскими данными</p>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="card-title text-center mb-4">Вход в систему</h5>
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Неверное имя пользователя или пароль
+                    </div>
+                {% endif %}
+                
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <small class="text-muted">МедТех Солюшнс &copy; 2025</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | МедТех Коннект</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-card {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .login-header {
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container login-container">
+        <div class="card login-card">
+            <div class="login-header">
+                <h3 class="m-0">МедТех Коннект</h3>
+                <p class="mb-0">Система управления медицинскими данными</p>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="card-title text-center mb-4">Вход в систему</h5>
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Неверное имя пользователя или пароль
+                    </div>
+                {% endif %}
+                
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <small class="text-muted">МедТех Солюшнс &copy; 2025</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
